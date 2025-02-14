@@ -73,19 +73,9 @@ function Add({setAddStatus}) {
 
             }
 
-
             // alert(`Successfull`)
 
-
-
-
-
-
-
-
             // https://www.youtube.com/watch?v=5BJDFKs41pI
-
-
 
             // https://youtu.be/5O5rVhAaf0U?si=CYDpoLdDutZRG_kO
 

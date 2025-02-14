@@ -5,14 +5,35 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
-import { removeVideoApi } from '../service/allApi';
+import { addHistoryApi, removeVideoApi } from '../service/allApi';
 
-function VideoCard({videoDetails, setDeleteStatus}) {
+function VideoCard({videoDetails, setDeleteStatus, present}) {
 
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+
+  const handleShow = async () => {
+    setShow(true)
+    
+    let caption = videoDetails?.caption
+    let url = videoDetails?.embededLink
+    const time = new Date()
+    console.log(time);
+    const timeStamp = new Intl.DateTimeFormat("en-GB",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",second:"2-digit"}).format(time)
+    console.log(timeStamp);
+
+    const reqBody = {
+      caption,
+      url,
+      timeStamp
+    }
+
+    const result = await addHistoryApi(reqBody)
+    console.log(result);
+    
+
+  };
 
   const handleDelete = async(id)=>{
     const result = await removeVideoApi(id)
@@ -23,13 +44,22 @@ function VideoCard({videoDetails, setDeleteStatus}) {
     }
   }
 
+  const videoDrag = (e, VDetails)=>{
+    console.log(e);
+    console.log(VDetails);
+    e.dataTransfer.setData("videoDetails", JSON.stringify(VDetails))
+    
+  }
+
   return (
     <>
-      <Card style={{ width: '100%' }} >
-        <Card.Img onClick={handleShow} variant="top" style={{ width: "100%", height: "300px" }} src={videoDetails?.imgUrl} />
+      <Card style={{ width: '100%' }} draggable onDragStart={(e)=>videoDrag(e, videoDetails)}>
+        {!present &&
+          <Card.Img onClick={handleShow} variant="top" style={{ width: "100%", height: "300px" }} src={videoDetails?.imgUrl} />}
         <Card.Body className='d-flex justify-content-between align-items-center'>
           <Card.Title>{videoDetails?.caption}</Card.Title>
-          <Button onClick={()=>handleDelete(videoDetails?.id)} variant="danger"><FontAwesomeIcon icon={faTrash} style={{ color: "white" }} /></Button>
+          {
+            !present && <Button onClick={()=>handleDelete(videoDetails?.id)} variant="danger"><FontAwesomeIcon icon={faTrash} style={{ color: "white" }} /></Button>}
         </Card.Body>
       </Card>
 
